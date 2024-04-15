@@ -1,26 +1,30 @@
 import scala.collection.mutable.ListBuffer
 
 object Solution extends App {
-  var ans: ListBuffer[List[Int]] = ListBuffer()
+  def combinationSum(candidates: Set[Int], target: Int): List[Set[Int]] = {
+    val ans = ListBuffer[Set[Int]]()
 
-  def solve(i: Int, arr: List[Int], temp: ListBuffer[Int], target: Int): Unit = {
-    if (target == 0) {
-      ans += temp.toList
-      return
+    def solve(arr: List[Int], i: Int, sum: Int, op: Set[Int]): Unit = {
+      if (i >= arr.length) {
+        return
+      }
+
+      if (arr(i) + sum == target) {
+        ans += (op + arr(i))
+        return
+      }
+
+      if (arr(i) + sum < target) {
+        val op1 = op
+        val op2 = op + arr(i)
+        solve(arr, i, sum + arr(i), op2)
+        solve(arr, i + 1, sum, op1)
+      } else {
+        solve(arr, i + 1, sum, op)
+      }
     }
-    if (target < 0 || i == arr.length) {
-      return
-    }
 
-    solve(i + 1, arr, temp, target)
-    temp += arr(i)
-    solve(i, arr, temp, target - arr(i))
-    temp.trimEnd(1)
-  }
-
-  def combinationSum(arr: List[Int], target: Int): List[List[Int]] = {
-    ans.clear()
-    solve(0, arr, ListBuffer(), target)
+    solve(candidates.toList.sorted, 0, 0, Set.empty)
     ans.toList
     }
 }
